@@ -34,6 +34,7 @@
       elm.model = controller.model;
     }
     elm.controller = controller;
+    elm.modelDelegate = MDVDelegate;
   }
 
   var registeredEvents = {};
@@ -103,17 +104,12 @@
         { attribute: ACTION_ATTRIBUTE }
       ]
     });
-
-    // Controller constructors may have bound data.
-    Model.dirtyCheck();
   }, false);
 
   function handleAction(e) {
-    console.log(e.type);
     var action = getAction(e.currentTarget);
     if (!action || action.eventType != e.type)
       return;
-    console.log(action.name);
 
     var currentTarget = e.target;
     var handled = false;
@@ -126,14 +122,11 @@
       }
  
       var func = currentTarget.controller[action.name];
-      func.call(currentTarget.controller, e.target.computedModel, e);
+      func.call(currentTarget.controller, e.target.model, e);
       handled = true;
-      console.log(currentTarget);
     }
 
-    if (handled)
-      Model.dirtyCheck();
-    else
+    if (!handled)
       console.error('Error: unhandled action', action, e);
   }
 })();
