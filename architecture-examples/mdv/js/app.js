@@ -23,8 +23,7 @@ TodoListController.prototype = {
 	create: function(rootModel, e) {
 		e.preventDefault(); // don't submit the form.
 		this.model.todos.push({
-			name: this.model.newTodo,
-			foo: 1
+			name: this.model.newTodo
 		});
 		this.model.newTodo = '';
 		this.model.incompleteCount++;
