@@ -126,9 +126,9 @@
       handled = true;
     }
 
-    if (handled)
-      e.preventDefault();
-    else
+    if (!handled)
       console.error('Error: unhandled action', action, e);
+    else if (e.type == 'submit')
+      e.preventDefault();
   }
 })();
