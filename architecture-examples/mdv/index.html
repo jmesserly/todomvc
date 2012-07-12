@@ -29,7 +29,7 @@
 					<template iterate="todos">
 						<li class="{{ editing | toggle }} {{ complete | toggle('completed') }}">
 							<div class="view" data-action="dblclick:edit">
-								<input data-action="click:toggleCompleted" class="toggle" type="checkbox">
+								<input data-action="click:completeWasToggled" class="toggle" type="checkbox" checked="{{ complete }}">
 								<label>{{ name }}</label>
 								<button data-action="click:delete" class="destroy"></button>
 							</div>

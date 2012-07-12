@@ -55,8 +55,7 @@ TodoListController.prototype = {
 		this.model.completeCount = 0;
 	},
 
-	toggleCompleted: function(todo) {
-		todo.complete = !todo.complete;
+	completeWasToggled: function(todo) {
 		this.model.incompleteCount += todo.complete ? -1 : 1;
 		this.model.completeCount += todo.complete ? 1 : -1;
 	}
