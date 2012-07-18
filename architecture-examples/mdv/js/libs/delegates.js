@@ -157,10 +157,10 @@ function MDVDelegate(binding) {
         ];
     }
 
-    var conditionalPattern = /^\s*(\S*)\s+(if|unless)\s+(expr\s*\(([^)]*)\s*\)\s*((?:.|\n)*)$|(\S*))/m;
+    var conditionalPattern = /^(\s*(\S*)\s+){0,1}(if|unless)\s+(expr\s*\(([^)]*)\s*\)\s*((?:.|\n)*)$|(\S*))/m;
     var match = binding.match(conditionalPattern);
     if (match != null)
-        return createConditional(match[1], match[2], match[4], match[5], match[6]);
+        return createConditional(match[2] || '', match[3], match[5], match[6], match[7]);
 
 
     function createTransform(binding, index) {
