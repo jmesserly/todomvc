@@ -1,66 +1,39 @@
-(function( window ) {
+document.querySelector('#todoapp').model = {
+    newTodo: '',
+    todos: [ ],
+    completeCount: 0,
 
-'use strict';
+    create: function() {
+      function Todo(parent) {
+        this.name = parent.newTodo;
+        parent.newTodo = '';
+        this.toggle = function() { parent.toggle(this); };
+        this.destroy = function() { parent.remove(this); };
+      }
 
-function TodoListController(root) {
-	this.model = {
-		newTodo: '',
-		todos: [
-		],
-		completeCount: 0,
-		incompleteCount: 0
-	};
-}
+      this.todos.push(new Todo(this));
+    },
+    remove: function(todo) {
+      this.todos.splice(this.todos.indexOf(todo), 1);
+      if (todo.complete)
+        this.completeCount--;
+    },
+    toggle: function(todo) {
+      this.completeCount += todo.complete ? 1 : -1;
+    },
+    clearCompleted: function() {
+      for (var i = this.todos.length - 1; i >= 0; --i) {
+        if (this.todos[i].complete)
+          this.todos.splice(i, 1);
+      }
+      this.completeCount = 0;
+    },
 
-TodoListController.prototype = {
-	endEditing: function() {
-		if (!this.currentlyEditing)
-			return;
-		delete this.currentlyEditing.editing;
-		this.currentlyEditing = undefined;
-	},
-
-	create: function(rootModel, e) {
-		e.preventDefault(); // don't submit the form.
-		this.model.todos.push({
-			name: this.model.newTodo
-		});
-		this.model.newTodo = '';
-		this.model.incompleteCount++;
-	},
-
-	edit: function(todo) {
-		this.currentlyEditing = todo;
-		todo.editing = true;
-	},
-
-	delete: function(todo) {
-		var todos = this.model.todos;
-		var index = todos.indexOf(todo);
-		todos.splice(index, 1);
-		if (todo.complete)
-			this.model.completeCount--;
-		else
-			this.model.incompleteCount--;
-	},
-
-	clearCompleted: function() {
-		var count = this.model.todos.length;
-		while (count-- > 0) {
-			var todo = this.model.todos[count];
-			if (todo.complete)
-				this.model.todos.splice(count, 1);
-		}
-
-		this.model.completeCount = 0;
-	},
-
-	completeWasToggled: function(todo) {
-		this.model.incompleteCount += todo.complete ? -1 : 1;
-		this.model.completeCount += todo.complete ? 1 : -1;
-	}
+    // FIXME: Should be handled by a getter/setter bound to the checkbox
+    toggleAll: function() {
+      var complete = this.todos.length == this.completeCount ? false : true;
+      this.todos.forEach(function(todo) { todo.complete = complete });
+      this.completeCount = complete ? this.todos.length : 0;
+    },
 };
-
-window.TodoListController = TodoListController;
-
-})( window );
+document.querySelector('#todoapp').modelDelegate = MDVDelegate;

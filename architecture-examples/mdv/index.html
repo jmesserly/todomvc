@@ -1,78 +1,82 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>MDV • TodoMVC</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>MDV • TodoMVC</title>
     <link rel="stylesheet" href="../../assets/base.css">
-	<!-- CSS overrides - remove if you don't need it -->
-	<link rel="stylesheet" href="css/app.css">
-	<!--[if IE]>
-	<script src="../assets/ie.js"></script>
-	<![endif]-->
+  <!-- CSS overrides - remove if you don't need it -->
+  <link rel="stylesheet" href="css/app.css">
+  <!--[if IE]>
+  <script src="../assets/ie.js"></script>
+  <![endif]-->
 </head>
 <body>
-	<section id="todoapp" data-controller="TodoListController">
-		<template instantiate>
-			<header id="header">
-				<h1>todos</h1>
-				<form data-action="submit:create">
-					<input id="new-todo" placeholder="What needs to be done?" autofocus value="{{ newTodo }}" >
-				</form>
-			</header>
-			<!-- This section should be hidden by default and shown when there are todos -->
-			<section id="main">
-				<input id="toggle-all" type="checkbox">
-				<label for="toggle-all">Mark all as complete</label>
-				<ul id="todo-list">
-					</li>
-					<template iterate="todos">
-						<li class="{{ editing | toggle }} {{ complete | toggle('completed') }}">
-							<div class="view" data-action="dblclick:edit">
-								<input data-action="click:completeWasToggled" class="toggle" type="checkbox" checked="{{ complete }}">
-								<label>{{ name }}</label>
-								<button data-action="click:delete" class="destroy"></button>
-							</div>
-							<form data-action="submit:endEditing">
-								<input data-action="blur:endEditing" class="edit" value="{{ name }}" autofocus>
-							</form>
-						</li>
-					</template>
-				</ul>
-			</section>
-			<!-- This footer should hidden by default and shown when there are todos -->
-			<template instantiate="if todos.length">
-				<footer id="footer">
-					<!-- This should be `0 items left` by default -->
-					<span id="todo-count"><strong>{{ incompleteCount }}</strong> item left</span>
-					<!-- FIXME: Implement filtering
-					<ul id="filters">
-						<li>
-							<a class="selected" href="#/">All</a>
-						</li>
-						<li>
-							<a href="#/active">Active</a>
-						</li>
-						<li>
-							<a href="#/completed">Completed</a>
-						</li>
-					</ul>
-				    -->
-					<button data-action="click:clearCompleted" id="clear-completed">Clear completed {{ completeCount }}</button>
-				</footer>
-        	</template>
-		</template>
-	</section>
-	<footer id="info">
-		<p>Double-click to edit a todo</p>
-		<p>Template by <a href="http://github.com/sindresorhus">Sindre Sorhus</a></p>
-		<p>Created by <a href="http://code.google.com/p/mdv/">MDV</a></p>
-		<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
-	</footer>
-	<script src="../../assets/base.js"></script>
-	<script src="js/libs/delegates.js"></script>
-	<script src="js/libs/mutation_summary.js"></script>
-	<script src="js/libs/view_controller.js"></script>
-	<script src="js/app.js"></script>
+  <section id="todoapp">
+    <template instantiate>
+      <header id="header">
+        <h1>todos</h1>
+        <form onsubmit="this.model.create(); return false">
+          <input id="new-todo" placeholder="What needs to be done?" autofocus value="{{ newTodo }}" >
+        </form>
+      </header>
+      <!-- This section should be hidden by default and shown when there are todos -->
+      <section id="main">
+        <!-- FIXME: Should be bound to the model instead of using onclick; leads to inconsistent UI -->
+        <input id="toggle-all" type="checkbox" onclick="this.model.toggleAll()">
+        <label for="toggle-all">Mark all as complete</label>
+        <ul id="todo-list">
+          </li>
+          <template iterate="todos">
+            <li class="{{ editing | toggle }} {{ complete | toggle('completed') }}">
+              <div class="view">
+                <input class="toggle" type="checkbox" checked="{{ complete }}" onclick="this.model.toggle()">
+                <label ondblclick="this.model.editing = true">{{ name }}</label>
+                <button onclick="this.model.destroy()" class="destroy"></button>
+              </div>
+              <form onsubmit="return this.model.editing = false">
+                <input onblur="this.model.editing = false" class="edit" value="{{ name }}" autofocus>
+              </form>
+            </li>
+          </template>
+        </ul>
+      </section>
+      <!-- This footer should hidden by default and shown when there are todos -->
+      <template instantiate="if todos.length">
+        <footer id="footer">
+          <!-- This should be `0 items left` by default -->
+          <span id="todo-count"><strong>{{ expr(completeCount, todos.length) length - completeCount }}</strong> {{ expr(completeCount, todos.length) (length - completeCount) == 1 ? 'item' : 'items' }} left</span>
+          <!-- FIXME: Implement filtering
+          <ul id="filters">
+            <li>
+              <a class="selected" href="#/">All</a>
+            </li>
+            <li>
+              <a href="#/active">Active</a>
+            </li>
+            <li>
+              <a href="#/completed">Completed</a>
+            </li>
+          </ul>
+            -->
+          <button id="clear-completed" onclick="this.model.clearCompleted()">Clear completed ({{ completeCount }})</button>
+        </footer>
+          </template>
+    </template>
+  </section>
+  <footer id="info">
+    <p>Double-click to edit a todo</p>
+    <p>Template by <a href="http://github.com/sindresorhus">Sindre Sorhus</a></p>
+    <p>Created by <a href="http://code.google.com/p/mdv/">MDV</a></p>
+    <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+  </footer>
+  <!-- FIXME: Add this back in before pushing back upstream -->
+  <!--<script src="../../assets/base.js"></script>-->
+
+  <!-- For transforms and expressions -->
+  <script src="js/libs/delegates.js"></script>
+
+  <!-- Actual app code -->
+  <script src="js/app.js"></script>
 </body>
 </html>
